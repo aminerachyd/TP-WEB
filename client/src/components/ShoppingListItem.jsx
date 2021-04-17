@@ -1,12 +1,15 @@
 import { Button, ListGroupItem } from "reactstrap";
 
-const ShoppingListItem = ({ id, name, removeItem }) => {
+import { deleteItem } from "../actions/itemActions";
+import { connect } from "react-redux";
+
+const ShoppingListItem = ({ id, name, deleteItem }) => {
   return (
     <ListGroupItem>
       <Button
         className="btn btn-danger mr-3"
         onClick={() => {
-          removeItem(id);
+          deleteItem(id);
         }}
       >
         &times;
@@ -16,4 +19,6 @@ const ShoppingListItem = ({ id, name, removeItem }) => {
   );
 };
 
-export default ShoppingListItem;
+const mapStateToProps = (state) => ({ item: state.item });
+
+export default connect(mapStateToProps, { deleteItem })(ShoppingListItem);

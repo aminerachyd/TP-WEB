@@ -1,65 +1,31 @@
-import { useState } from "react";
-import { Button, Container, ListGroup } from "reactstrap";
-import { v4 as uuid } from "uuid";
+import PropTypes from "prop-types";
+import { useEffect } from "react";
+import { connect } from "react-redux";
+import { ListGroup } from "reactstrap";
+import { getItems } from "../actions/itemActions";
 import ShoppingListItem from "./ShoppingListItem";
 
-const ShoppingList = () => {
-  /**
-   * Le state pour ce composant
-   * Contient un stockage des items
-   */
-  const [state, setState] = useState({
-    items: [
-      { id: uuid(), name: "Eggs" },
-      { id: uuid(), name: "Milk" },
-      { id: uuid(), name: "Steak" },
-      { id: uuid(), name: "Water" },
-    ],
-  });
-
-  /**
-   * Fonction pour retirer un item du state
-   */
-  const removeItem = (id) => {
-    setState({
-      items: state.items.filter((item) => item.id !== id),
-    });
-  };
+const ShoppingList = ({ item: { items }, getItems }) => {
+  useEffect(() => {
+    getItems();
+  }, [getItems]);
 
   return (
-    <Container>
-      <Button
-        color="dark"
-        className="mb-2"
-        onClick={() => {
-          const name = prompt("Enter item");
-          if (name) {
-            setState({
-              items: [
-                ...state.items,
-                {
-                  id: uuid(),
-                  name,
-                },
-              ],
-            });
-          }
-        }}
-      >
-        Add Item
-      </Button>
-      <ListGroup>
-        {state.items.map(({ id, name }) => (
-          <ShoppingListItem
-            key={id}
-            id={id}
-            name={name}
-            removeItem={removeItem}
-          />
-        ))}
-      </ListGroup>
-    </Container>
+    <ListGroup>
+      {items.map(({ _id, name }) => (
+        <ShoppingListItem key={_id} id={_id} name={name} />
+      ))}
+    </ListGroup>
   );
 };
 
-export default ShoppingList;
+ShoppingList.propTypes = {
+  getItems: PropTypes.func.isRequired,
+  item: PropTypes.object.isRequired,
+};
+
+const mapStateToProps = (state) => ({
+  item: state.item,
+});
+
+export default connect(mapStateToProps, { getItems })(ShoppingList);
